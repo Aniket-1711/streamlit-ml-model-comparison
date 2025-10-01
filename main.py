@@ -11,7 +11,7 @@ import matplotlib.pyplot as plt
 #Libraries from Scikit - Learn for machine learning --> use pip install scikit-learn while installing in terminal
 from sklearn.model_selection import train_test_split
 from sklearn.preprocessing import LabelEncoder
-from sklearn.metrics import classification_report, confusion_matrix
+from sklearn.metrics import classification_report, confusion_matrix, accuracy_score
 
 
 #importing model 
@@ -114,6 +114,29 @@ def load_and_preprocess_data():
 
     return df_clean
 
+
+#**Function to train all the models
+@st.cache_data
+def train_all_models(X_train, y_train, X_test, y_test):
+    # A dictionary to hold the accuracy scores of each model.
+    accuracies={}
+
+    # Initialize all the models
+    models={
+        "Logistic Regression":LogisticRegression(max_iter=1000),
+        "K-Nearest Neighbors":KNeighborsClassifier(),
+        "Support Vector Machine":SVC(),
+        "Naive Bayes": GaussianNB()
+    }
+
+
+    #Loop through each model, train it, and store it's accuracy.
+    for name, model in models.items():
+        model.fit(X_train, y_train)
+        y_pred=model.predict(X_test)
+        accuracies[name]=accuracy_score(y_test, y_pred)
+
+    return accuracies
 # ----------------------------------------------------------------------------
 #                            EXPLORE THE DATA
 # ----------------------------------------------------------------------------
@@ -201,21 +224,143 @@ X_train,X_test, y_train, y_test=train_test_split(
 #* ----------------------------------------------------------------------------
 #*                            BUILD THE USER INTERFACE
 #* ----------------------------------------------------------------------------
-#Main title and description
-st.title("🍔 Zomato Restaurant Rating Predictor")
-st.markdown("""
-This dashboard predicts the rating category of a restaurant in Bangalore
-            based on its features. Choose a model from the sidebar to see its performance.
-            """)
+
+#Sidebar for navigation
+st.sidebar.title("Navigation")
+nav_choice=st.sidebar.radio("Go to:",
+                            [
+                                "Individual Model Performance",
+                                "Model Comparison & Summary" 
+])
+
+#*-----------------------------------------------------------------------
+#*------- Page 1: Individul Model performance ---------------------------
+#*-----------------------------------------------------------------------
+if nav_choice=="Individual Model Performance":
+    st.title("🍔 Zomato Restaurant Rating Predictor")
+    st.markdown("""
+    This dashboard predicts the rating category of a restaurant in Bangalore
+                based on its features. Choose a model from the sidebar to see its performance.
+                """)
+    
+    #Sidebar for model selection
+    st.sidebar.title("Model Selection")
+    models={
+        "Logistic Regression":LogisticRegression(max_iter=1000),
+        "K-Nearest Neighbors":KNeighborsClassifier(),
+        "Support Vector Machine":SVC(),
+        "Naive Bayes": GaussianNB()
+    }
+
+    selected_model=st.sidebar.selectbox("Select a Model", list(models.keys()))
 
 
-#Sidebar for user input
-st.sidebar.title("Model Selection")
-models={
-    "Logistic Regression":LogisticRegression(max_iter=1000),
-    "K-Nearest Neighbors":KNeighborsClassifier(),
-    "Support Vector Machine":SVC(),
-    "Naive Bayes": GaussianNB()
-}
+    #* ----------------------------------------------------------------------------
+    #*                      MODEL TRAINING AND PERFORMANCE
+    #* ----------------------------------------------------------------------------
+    #Display a header for this section, which changes based on the model selected.
+    st.header(f"Performance of: {selected_model}")
 
-selected_model=st.sidebar.selectbox("Select a Model", list(models.keys()))
+    #Get the model object from our dicitionary
+    model=models[selected_model]
+
+    #Train the model on the training data.
+    model.fit(X_train, y_train)
+
+    #Make predictions on the unseen test data.
+    y_pred=model.predict(X_test)
+
+
+    #Get then names of our target categories (e.g 'Low', 'Average', 'High')
+    target_names=sorted(df['rating_category'].unique())
+
+    #*---Display Metrics-----
+
+    # 1. Classification Report
+    st.subheader("Classification Report")
+    report=classification_report(y_test, y_pred, target_names=target_names, output_dict=True)
+    report_df=pd.DataFrame(report).transpose()
+    st.dataframe(report_df.round(2))
+
+
+    #2. Confusion matrix
+    st.subheader("Confusion Matrix")
+    #Use columns to display the plot and explantion side-by-side
+    col1, col2=st.columns([2,1])
+
+
+    with col1:
+        cm=confusion_matrix(y_test, y_pred)
+        fig, ax=plt.subplots(figsize=(6,4))
+        sns.heatmap(cm, annot=True, fmt='d', cmap='Blues',
+                    xticklabels=target_names, yticklabels=target_names,ax=ax)
+        ax.set_xlabel('Predicted Lable')
+        ax.set_ylabel('True Label')
+        st.pyplot(fig)
+
+    with col2:
+        st.markdown("""
+        **How to read the matrix:**
+        - The **rows** represent the actual rating category.
+        - The **columns** represent the category predicted the model.
+        - The **diagonal numbers** show the number of correct predictions.
+        - **Off-Diagonal numbers** show where the model made mistakes.
+    """)
+        
+    st.info(f"The {selected_model} model was trained and evaluated. Check the report and matrix above to see its performance.")
+
+
+
+#* ----------------------------------------------------------------------------
+# *                      PAGE 2: MODEL COMPARISON & SUMMARY
+#* ----------------------------------------------------------------------------
+elif nav_choice=="Model Comparison & Summary":
+    st.title("🏆 Model Comparison & Summary")
+    st.markdown("Here we compare the accuracy of all models and recommend the best one.")
+
+
+    #Get the accuracy scores by calling our function
+    accuracies=train_all_models(X_train, y_train, X_test, y_test)
+
+    #Find the best model
+    best_model_name=max(accuracies, key=accuracies.get)
+    best_accuracy=accuracies[best_model_name]
+
+    #----- A helper function to draw the accuracy circle----
+    def create_accuracy_circle(score, title):
+        fig, ax=plt.subplots(figsize=(3,3))
+        #use a pie chart to create the donut effect
+        ax.pie([score, 1-score], startangle=90, colors=['#4CAF50', '#E0E0E0'],
+               wedgeprops=dict(width=0.3, edgecolor='w'))
+        
+        # Add the percentage text in the center
+        ax.text(0, 0, f"{score: .1%}", ha='center', va='center', fontsize=20, weight='bold')
+        ax.set_title(title, fontsize=12)
+        return fig
+
+    #!Display the accuracy circles in a 2x2 grid
+
+    st.subheader("Model Accuracy Comparison")
+    col1, col2=st.columns(2)
+    with col1:
+        fig=create_accuracy_circle(accuracies["Logistic Regression"], "Logistic Regression")
+        st.pyplot(fig)
+        fig=create_accuracy_circle(accuracies["Support Vector Machine"], "Support Vector Machine")
+        st.pyplot(fig)
+    with col2:
+        fig=create_accuracy_circle(accuracies["K-Nearest Neighbors"], "K-Nearest Neighbors")
+        st.pyplot(fig)
+        fig=create_accuracy_circle(accuracies["Naive Bayes"], "Naive Bayes")
+        st.pyplot(fig)
+
+    
+    #Display the final recommendation
+    st.subheader("Final Recommendation")
+    st.success(f"""
+         After comparing all four models, the **{best_model_name}** emerges as the top performer
+    for this dataset with an accuracy of **{best_accuracy:.1%}**.
+
+    This suggests that its approach to finding patterns in the data is the most effective
+    for distinguishing between 'Low', 'Average', and 'High' rated restaurants based on the
+    features we've provided.
+    """)
