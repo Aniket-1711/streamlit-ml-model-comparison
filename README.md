@@ -38,11 +38,10 @@ Follow these steps to run the project locally on your machine.
 git clone [https://github.com/Aniket-1711/streamlit-ml-model-comparison.git](https://github.com/Aniket-1711/streamlit-ml-model-comparison.git)
 cd streamlit-ml-model-comparison
 
+
 2. Set up Git LFS
 
 This project uses Git LFS to handle the large dataset.
-
-```bash
 # Install Git LFS (if you haven't already)
 git lfs install
 
