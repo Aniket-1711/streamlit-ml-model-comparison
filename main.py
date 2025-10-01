@@ -203,3 +203,19 @@ X_train,X_test, y_train, y_test=train_test_split(
 #* ----------------------------------------------------------------------------
 #Main title and description
 st.title("🍔 Zomato Restaurant Rating Predictor")
+st.markdown("""
+This dashboard predicts the rating category of a restaurant in Bangalore
+            based on its features. Choose a model from the sidebar to see its performance.
+            """)
+
+
+#Sidebar for user input
+st.sidebar.title("Model Selection")
+models={
+    "Logistic Regression":LogisticRegression(max_iter=1000),
+    "K-Nearest Neighbors":KNeighborsClassifier(),
+    "Support Vector Machine":SVC(),
+    "Naive Bayes": GaussianNB()
+}
+
+selected_model=st.sidebar.selectbox("Select a Model", list(models.keys()))
