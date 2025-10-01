@@ -4,8 +4,7 @@ An interactive web application built with Streamlit to predict the rating catego
 
 
 # 🚀 Live Demo
-➡️ https://aniket-1711-streamlit-ml-model-comparison-main-qmunx8.streamlit.app/**
-
+**➡️ https://aniket-1711-streamlit-ml-model-comparison-main-qmumv8.streamlit.app/**
 
 # ✨ Features
 **Interactive UI: A clean, user-friendly interface built with Streamlit.**
@@ -37,7 +36,6 @@ Follow these steps to run the project locally on your machine.
 
 **1. Clone the Repository**
 
-    ```bash
 
     git clone [https://github.com/Aniket-1711/streamlit-ml-model-comparison.git](https://github.com/Aniket-1711/streamlit-ml-model-comparison.git)
     cd streamlit-ml-model-comparison
@@ -47,7 +45,6 @@ Follow these steps to run the project locally on your machine.
 
 This project uses Git LFS to handle the large dataset.
 
-    ```bash
     # Install Git LFS (if you haven't already)
     git lfs install
 
@@ -59,12 +56,10 @@ This project uses Git LFS to handle the large dataset.
 It's recommended to use a virtual environment.
 
 # Create a virtual environment (optional but recommended)
-    ```bash
     python -m venv venv
     source venv/bin/activate  # On Windows, use `venv\Scripts\activate`
 
 # Install the required libraries
-    ```bash
     pip install -r requirements.txt
 
 **4. Run the Streamlit App**
@@ -74,7 +69,6 @@ streamlit run main.py
 The application should now be open and running in your web browser!
 
 # 📂 Project Structure
-    ```bash
     .
 
     ├── .gitattributes         # Configures Git LFS \
@@ -85,4 +79,6 @@ The application should now be open and running in your web browser!
     ├── requirements.txt      # List of Python dependencies\
     └── zomato.csv            # The dataset file (tracked by Git LFS)\
 
-This project was built as a hands-on learning experience to master data cleaning, machine learning model comparison, and interactive dashboard creation with Streamlit.
+----
+
+  # This project was built as a hands-on learning experience to master data cleaning, machine learning model comparison, and interactive dashboard creation with Streamlit.
