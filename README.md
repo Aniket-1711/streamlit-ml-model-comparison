@@ -1,12 +1,12 @@
-# 🍔 Zomato Restaurant Rating Predictor 🍔
+# **🍔 Zomato Restaurant Rating Predictor 🍔**
 An interactive web application built with Streamlit to predict the rating category of restaurants in Bangalore. This dashboard compares four different machine learning models to determine the most effective one for the task.
 
 
 
-# 🚀 Live Demo
+# **🚀 Live Demo**
 **➡️ https://aniket-1711-streamlit-ml-model-comparison-main-qmumv8.streamlit.app/**
 
-# ✨ Features
+# **✨ Features**
 **Interactive UI: A clean, user-friendly interface built with Streamlit.**
 
 **Data Cleaning:** The app performs a full, automated data cleaning and preprocessing pipeline on the Zomato dataset.
@@ -19,7 +19,7 @@ Final Recommendation: The app automatically identifies and recommends the best-p
 
 
 
-# 🛠️  Tech Stack
+# **🛠️  Tech Stack**
 **Language: Python**
 
 **Web Framework: Streamlit**
@@ -31,7 +31,7 @@ Final Recommendation: The app automatically identifies and recommends the best-p
 **Machine Learning: Scikit-learn**
 
 
-# 🔧 Setup and Installation
+# **🔧 Setup and Installation**
 Follow these steps to run the project locally on your machine.
 
 **1. Clone the Repository**
@@ -59,7 +59,7 @@ It's recommended to use a virtual environment.
     python -m venv venv
     source venv/bin/activate  # On Windows, use `venv\Scripts\activate`
 
-# Install the required libraries
+# **Install the required libraries**
     pip install -r requirements.txt
 
 **4. Run the Streamlit App**
@@ -68,7 +68,7 @@ streamlit run main.py
 
 The application should now be open and running in your web browser!
 
-# 📂 Project Structure
+# **📂 Project Structure**
     .
 
     ├── .gitattributes         # Configures Git LFS \
