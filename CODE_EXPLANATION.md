@@ -25,29 +25,29 @@ This is the first step in any Python script. We import all the necessary "toolki
 # **2. 📄 Page Configuration**
 The st.set_page_config() command sets up the basic properties of our web page. This must be the first Streamlit command in the script.
 
-page_title: The text that appears in the browser tab.
+**page_title:** The text that appears in the browser tab.
 
-page_icon: 🍔 The small icon next to the title.
+**page_icon:** 🍔 The small icon next to the title.
 
-layout="wide": Tells the app to use the full width of the browser.
+**layout="wide":** Tells the app to use the full width of the browser.
 
-initial_sidebar_state="expanded": Ensures the sidebar is open by default.
+**initial_sidebar_state="expanded":** Ensures the sidebar is open by default.
 
 # **3. 🧹 Data Loading and Preprocessing**
-This is the most critical section, handled by the load_and_preprocess_data() function. We use the @st.cache_data decorator so that all these heavy operations run only once, making the app very fast. ⚡
+This is the most critical section, handled by the **load_and_preprocess_data()** function. We use the **@st.cache_data** decorator so that all these heavy operations run only once, making the app very fast. ⚡
 
 # The Cleaning Journey:
-**📥 Loading:** We start by loading the full zomato.csv.
+**📥 Loading:** We start by loading the full **zomato.csv**.
 
-**🎲 Sampling:** We take a random sample of 10,000 rows to ensure our app is fast. random_state=42 guarantees we get the same sample every time.
+**🎲 Sampling:** We take a random sample of **10,000** rows to ensure our app is fast. **random_state=42** guarantees we get the same sample every time.
 
 **✏️ Renaming & Selection:** We rename the complex approx_cost(for two people) column to cost2plates and select only the relevant columns.
 
-**🗑️ Handling Duplicates (Round 1):** We use df.drop_duplicates() to remove initial duplicates.
+**🗑️ Handling Duplicates (Round 1):** We use **df.drop_duplicates()** to remove initial duplicates.
 
 **✨ Cleaning the rate Column:** This was a multi-step process:
 
-Removed rows where rate was missing (dropna).
+Removed rows where rate was missing **(dropna)**.
 
 Filtered out rows where rate was 'NEW' or '-'.
 
@@ -55,11 +55,11 @@ Filtered out rows where rate was 'NEW' or '-'.
 
 # ✨ Cleaning Other Columns:
 
-For cost2plates, we filled missing values with the average cost.
+For cost2plates, we **filled missing values with the average cost**.
 
-For rest_type and cuisines, we filled missing values with the most common value (the mode).
+For rest_type and cuisines, we **filled missing values with the most common value (the mode)**.
 
-**🗑️ Handling Duplicates (Round 2):** We run df.drop_duplicates() a final time to catch any new duplicates created during the cleaning process.
+**🗑️ Handling Duplicates (Round 2):** We run **df.drop_duplicates()** a final time to catch any new duplicates created during the cleaning process.
 
 **🎯 Creating the Target Variable (Binning):** We define a function classify_rating that converts the numerical rate into three categories: 'Low', 'Average', or 'High'. This creates our final target column, rating_category.
 
