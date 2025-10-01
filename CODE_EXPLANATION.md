@@ -1,102 +1,86 @@
-📝 Zomato Rating Predictor: Code Explanation
-This document provides a detailed, step-by-step explanation of the Python code in the main.py file.
+# 🍽️ Zomato Rating Predictor  
 
-1. 📚 Importing Libraries
-This is the first step in any Python script. We import all the necessary "toolkits" that provide pre-built functions, so we don't have to write everything from scratch.
+An interactive **Streamlit web application** that predicts restaurant ratings using multiple machine learning models.  
 
-streamlit: 🌐 The core framework used to build the interactive web application.
+---
 
-pandas: 🐼 The primary tool for data manipulation. We use it to read the zomato.csv file into a table-like structure called a DataFrame and to perform all our data cleaning operations.
+## 📚 1. Importing Libraries  
 
-numpy: 🔢 A fundamental library for numerical operations. Pandas is built on top of it.
+We start by importing all the necessary libraries:  
 
-seaborn & matplotlib.pyplot: 📊 Our data visualization libraries. We use them together to create the beautiful and informative Confusion Matrix plots.
+- **streamlit 🌐** → Build interactive web apps.  
+- **pandas 🐼** → Data handling and cleaning.  
+- **numpy 🔢** → Numerical computations.  
+- **seaborn & matplotlib 📊** → Data visualization (Confusion Matrix, plots).  
+- **scikit-learn 🧠** → Machine learning toolbox.  
+  - `train_test_split` 🔪 → Splits data into training & testing sets.  
+  - `LabelEncoder` 🏷️ → Converts text → numbers.  
+  - `classification_report`, `confusion_matrix`, `accuracy_score` 📜 → Model evaluation metrics.  
+  - Models used: `LogisticRegression`, `KNeighborsClassifier`, `SVC`, `GaussianNB`.  
 
-scikit-learn (sklearn): 🧠 This is our complete machine learning toolbox.
+---
 
-train_test_split: 🔪 A function to automatically divide our data into a training set and a testing set.
+## 📄 2. Page Configuration  
 
-LabelEncoder: 🏷️ A tool to convert text data (e.g., 'BTM Layout') into numerical data (e.g., 5).
+We configure the Streamlit app using `st.set_page_config()`:  
 
-classification_report, confusion_matrix, accuracy_score: 📜 These are our evaluation metrics to score the models.
+- **page_title** → Title shown on browser tab.  
+- **page_icon 🍔** → Small favicon.  
+- **layout = "wide"** → Full browser width.  
+- **initial_sidebar_state = "expanded"** → Sidebar open by default.  
 
-The Models: The four different classification algorithms we are comparing (LogisticRegression, KNeighborsClassifier, SVC, GaussianNB).
+---
 
-2. 📄 Page Configuration
-The st.set_page_config() command sets up the basic properties of our web page. This must be the first Streamlit command in the script.
+## 🧹 3. Data Loading & Preprocessing  
 
-page_title: The text that appears in the browser tab.
+Defined in `load_and_preprocess_data()` function with `@st.cache_data` to improve performance.  
 
-page_icon: 🍔 The small icon next to the title.
+### Cleaning Steps:  
 
-layout="wide": Tells the app to use the full width of the browser.
+1. **📥 Load Data** → Read `zomato.csv`.  
+2. **🎲 Sampling** → Take 10,000 random rows (`random_state=42`).  
+3. **✏️ Rename Columns** → e.g., `approx_cost(for two people)` → `cost2plates`.  
+4. **🗑️ Duplicates (Round 1)** → Remove duplicates.  
+5. **✨ Clean `rate` column** →  
+   - Drop missing, "NEW", and "-" values.  
+   - Convert `"4.1/5"` → `4.1`.  
+6. **✨ Clean Other Columns** →  
+   - Fill missing `cost2plates` with average.  
+   - Fill missing `rest_type` and `cuisines` with mode.  
+7. **🗑️ Duplicates (Round 2)** → Final cleanup.  
+8. **🎯 Target Variable** → Create `rating_category` (`Low`, `Average`, `High`).  
 
-initial_sidebar_state="expanded": Ensures the sidebar is open by default.
+---
 
-3. 🧹 Data Loading and Preprocessing
-This is the most critical section, handled by the load_and_preprocess_data() function. We use the @st.cache_data decorator so that all these heavy operations run only once, making the app very fast. ⚡
+## 🤖 4. Final Prep for Machine Learning  
 
-The Cleaning Journey:
-📥 Loading: We start by loading the full zomato.csv.
+- **Feature/Target Separation** → Split `X` (features) & `y` (target).  
+- **🔡 Encoding** → Convert categorical columns into numbers with `LabelEncoder`.  
+- **🔪 Train-Test Split** → Use `train_test_split` with `stratify=y`.  
 
-🎲 Sampling: We take a random sample of 10,000 rows to ensure our app is fast. random_state=42 guarantees we get the same sample every time.
+---
 
-✏️ Renaming & Selection: We rename the complex approx_cost(for two people) column to cost2plates and select only the relevant columns.
+## 🎨 5. Building the User Interface  
 
-🗑️ Handling Duplicates (Round 1): We use df.drop_duplicates() to remove initial duplicates.
+- **Navigation** → Sidebar with `st.sidebar.radio()`.  
+- **if/elif logic** → Switch between two pages.  
 
-✨ Cleaning the rate Column: This was a multi-step process:
+---
 
-Removed rows where rate was missing (dropna).
+## 📈 6. Page 1: Individual Model Performance  
 
-Filtered out rows where rate was 'NEW' or '-'.
+- Sidebar **selectbox** → Choose one of the four models.  
+- Train & display:  
+  - **Classification Report** → Precision, Recall, F1-score.  
+  - **Confusion Matrix** → Visual performance analysis.  
 
-Converted the string "4.1/5" into the number 4.1.
+---
 
-✨ Cleaning Other Columns:
+## 🏆 7. Page 2: Model Comparison & Summary  
 
-For cost2plates, we filled missing values with the average cost.
+- Train all four models → Compare accuracies.  
+- Find **best model** automatically.  
+- Visualize accuracy using **donut charts**.  
+- Display final recommendation with `st.success()`.  
 
-For rest_type and cuisines, we filled missing values with the most common value (the mode).
-
-🗑️ Handling Duplicates (Round 2): We run df.drop_duplicates() a final time to catch any new duplicates created during the cleaning process.
-
-🎯 Creating the Target Variable (Binning): We define a function classify_rating that converts the numerical rate into three categories: 'Low', 'Average', or 'High'. This creates our final target column, rating_category.
-
-4. 🤖 Final Data Prep for Machine Learning
-Before training, we perform three final preparation steps:
-
-** แยก Feature/Target Separation**: We split our DataFrame into X (the features) and y (the target).
-
-🔡 Encoding: We loop through all text columns in X and use LabelEncoder to convert them into numbers.
-
-🔪 Train-Test Split: We use train_test_split to divide our data. stratify=y is used to ensure both training and testing sets have a similar proportion of each rating category.
-
-5. 🎨 Building the User Interface
-This section creates the visible parts of our app.
-
-Navigation: We use st.sidebar.radio() to create a navigator that allows the user to switch between our two pages.
-
-if/elif Block: The main logic that displays either Page 1 or Page 2 based on the user's choice.
-
-6. 📈 Page 1: Individual Model Performance
-This page allows for a deep dive into a single model.
-
-A selectbox in the sidebar lets the user choose one of the four models.
-
-The code then trains that model and displays two key metrics:
-
-Classification Report: A detailed table showing precision, recall, and f1-score.
-
-Confusion Matrix: A heatmap that visually shows where the model made correct and incorrect predictions.
-
-7. 🏆 Page 2: Model Comparison & Summary
-This page provides a high-level overview and a final recommendation.
-
-It calls our train_all_models() function to get the accuracy scores for all four models.
-
-It finds the model with the highest score.
-
-It uses a helper function, create_accuracy_circle, to visualize the accuracy of each model in a cool donut-chart style.
-
-Finally, it displays a summary using st.success() that declares the best model and explains why it was chosen.
+---
